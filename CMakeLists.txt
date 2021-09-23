@@ -74,6 +74,15 @@ add_executable(
 
     # Game
     src/stardank/game/game.cpp
+    src/stardank/game/on_event.cpp
+    src/stardank/game/on_key_press.cpp
+    src/stardank/game/on_key_release.cpp
+    src/stardank/game/on_mouse_down.cpp
+    src/stardank/game/on_mouse_move.cpp
+    src/stardank/game/on_mouse_scroll.cpp
+    src/stardank/game/on_mouse_up.cpp
+    src/stardank/game/on_window_close.cpp
+    src/stardank/game/on_window_resize.cpp
     src/stardank/game/render.cpp
     src/stardank/game/update.cpp
 )

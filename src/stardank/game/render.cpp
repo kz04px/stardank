@@ -14,7 +14,7 @@ static const Colour team_colours[] = {
     {0.0f, 1.0f, 1.0f},
 };
 
-void Game::render(const Camera &camera) const noexcept {
+void Game::render() const noexcept {
     if (m_map_view) {
         auto map_camera = Camera();
         map_camera.position = {5.0f, 5.0f};
@@ -44,7 +44,7 @@ void Game::render(const Camera &camera) const noexcept {
     } else {
         auto view = m_registry.view<const Body, const Render>();
 
-        RenderAPI::begin(camera);
+        RenderAPI::begin(m_camera);
         view.each([](const auto &body, const auto &render) {
             switch (render.type) {
                 case Render::Type::None:

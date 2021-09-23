@@ -2,10 +2,9 @@
 #include "../events/keyboard_event.hpp"
 #include "../events/mouse_event.hpp"
 #include "../events/window_event.hpp"
-#include "../game/game.hpp"
-#include "application.hpp"
+#include "game.hpp"
 
-void Application::on_event(Event &e) {
+void Game::on_event(Event &e) {
     switch (e.type()) {
         // Mouse
         case EventType::MouseMoveEvent:
@@ -37,6 +36,4 @@ void Application::on_event(Event &e) {
         default:
             break;
     }
-
-    m_game->on_event(e);
 }

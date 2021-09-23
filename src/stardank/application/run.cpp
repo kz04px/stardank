@@ -11,23 +11,24 @@ void Application::run() {
         RenderAPI::clear();
 
         switch (m_state) {
-            case State::Menu:
-                RenderAPI::begin(m_camera);
+            case State::Menu: {
+                auto camera = Camera();
+                camera.position = {5.0f, 5.0f};
+                camera.size = {10.0f, 10.0f};
+                RenderAPI::begin(camera);
                 RenderAPI::draw_text("Menu", 0.0f, 0.0f, 1.0f, 10.0f);
                 RenderAPI::end();
                 break;
+            }
             case State::Game: {
                 if (!m_paused) {
                     m_game->update(1.0f / 60);
                 }
 
-                const auto [x, y] = m_game->camera_position();
-                m_camera.position = {x, y};
-
-                m_game->render(m_camera);
+                m_game->render();
 
                 if (m_paused) {
-                    RenderAPI::begin(m_camera);
+                    RenderAPI::begin(m_game->camera());
                     RenderAPI::draw_text("Paused", 0.0f, 0.0f, 1.0f, 10.0f);
                     RenderAPI::end();
                 }

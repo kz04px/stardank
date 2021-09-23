@@ -6,7 +6,7 @@
 #include "../window/window.hpp"
 
 Application::Application(int argc, char** argv)
-    : m_window{new Window()}, m_game{new Game()}, m_camera{}, m_state{State::Game}, m_paused{false}, m_quit{false} {
+    : m_window{new Window()}, m_game{new Game()}, m_state{State::Game}, m_paused{false}, m_quit{false} {
     srand(time(0));
     m_window->set_callback(std::bind(&Application::on_event, this, std::placeholders::_1));
     auto event = WindowResizeEvent(m_window->width(), m_window->height());

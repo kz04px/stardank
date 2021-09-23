@@ -46,7 +46,6 @@ class Application {
    private:
     std::unique_ptr<Window> m_window;
     std::unique_ptr<Game> m_game;
-    Camera m_camera;
     State m_state;
     bool m_paused;
     bool m_quit;

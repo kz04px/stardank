@@ -118,8 +118,13 @@ void position(entt::registry &registry, const float dt) {
 }
 
 void Game::update(const float dt) {
-    inputs(m_registry);
-    magic_engines(m_registry);
-    acceleration(m_registry, dt);
-    position(m_registry, dt);
+    if (!m_map_view) {
+        inputs(m_registry);
+        magic_engines(m_registry);
+        acceleration(m_registry, dt);
+        position(m_registry, dt);
+
+        const auto pos = m_registry.get<Body>(m_us);
+        m_camera.position = {pos.x, pos.y};
+    }
 }
