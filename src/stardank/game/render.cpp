@@ -21,6 +21,7 @@ void Game::render() const noexcept {
         map_camera.size = {10.0f, 10.0f};
 
         RenderAPI::begin(map_camera);
+
         // Draw systems
         for (const auto &system : m_region.systems) {
             auto quad = Quad();
@@ -40,7 +41,6 @@ void Game::render() const noexcept {
         RenderAPI::draw_text("Map", 0.0f, 0.0f, 1.0f, 10.0f);
 
         RenderAPI::end();
-
     } else {
         auto view = m_registry.view<const Body, const Render>();
 
