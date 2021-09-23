@@ -38,7 +38,7 @@ class Game {
 
     void render() const noexcept;
 
-    void load_system();
+    void load_system(const space::System &system);
 
     void on_event(Event &e);
 

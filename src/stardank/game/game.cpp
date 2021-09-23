@@ -47,7 +47,7 @@ Game::Game()
     }
 }
 
-void Game::load_system() {
+void Game::load_system(const space::System &system) {
     // Add ship
     {
         m_us = m_registry.create();
