@@ -1,6 +1,14 @@
 #include "game.hpp"
 
-Game::Game() : m_camera{}, m_region{}, m_registry{}, m_us{}, m_map_view{true} {
+Game::Game()
+    : m_camera{},
+      m_region{},
+      m_registry{},
+      m_us{},
+      m_region_selected{-1},
+      m_window_width{},
+      m_window_height{},
+      m_map_view{true} {
     m_region.age = 0.0f;
 
     {
