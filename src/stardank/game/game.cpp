@@ -5,7 +5,7 @@ Game::Game()
       m_region{},
       m_registry{},
       m_us{},
-      m_region_selected{-1},
+      m_system_selected{-1},
       m_window_width{},
       m_window_height{},
       m_map_view{true} {

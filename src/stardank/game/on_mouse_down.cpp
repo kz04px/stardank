@@ -25,12 +25,12 @@ void Game::on_mouse_down(MouseDownEvent &e) {
                 }
 
                 if (closest_dist <= 0.5f) {
-                    m_region_selected = closest;
+                    m_system_selected = closest;
                 } else {
-                    m_region_selected = -1;
+                    m_system_selected = -1;
                 }
 
-                std::cout << "Selected region: " << m_region_selected << "\n";
+                std::cout << "Selected system: " << m_system_selected << "\n";
             }
             break;
         case 1:  // Right
