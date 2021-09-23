@@ -30,7 +30,6 @@ void Application::on_key_press(KeyPressEvent &e) {
             m_state = State::Game;
             break;
         case 51:  // 3
-            m_state = State::Map;
             break;
         case 52:  // 4
             break;

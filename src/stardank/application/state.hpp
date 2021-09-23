@@ -5,7 +5,6 @@ enum class State
 {
     Menu = 0,
     Game,
-    Map,
 };
 
 #endif
