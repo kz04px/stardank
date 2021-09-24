@@ -12,8 +12,8 @@ using namespace space::components;
 static const Colour team_colours[] = {
     {0.8f, 0.8f, 0.8f},
     {1.0f, 0.0f, 0.0f},
-    {0.0f, 1.0f, 0.0f},
     {0.0f, 0.0f, 1.0f},
+    {0.0f, 1.0f, 0.0f},
     {1.0f, 1.0f, 0.0f},
     {1.0f, 0.0f, 1.0f},
     {0.0f, 1.0f, 1.0f},
