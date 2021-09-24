@@ -1,3 +1,4 @@
+#include <space/components/beacon.hpp>
 #include <space/components/body.hpp>
 #include <space/components/render.hpp>
 #include "../camera.hpp"
@@ -46,40 +47,84 @@ void Game::render() const noexcept {
 
         RenderAPI::end();
     } else {
-        auto view = m_registry.view<const Body, const Render>();
-
         RenderAPI::begin(m_camera);
-        view.each([](const auto &body, const auto &render) {
-            switch (render.type) {
-                case Render::Type::None:
-                    break;
-                case Render::Type::Ship: {
-                    auto tri = Triangle();
-                    tri.vertices[0] = glm::vec2{-0.5f, -0.5f};
-                    tri.vertices[1] = glm::vec2{0.0f, 1.0f};
-                    tri.vertices[2] = glm::vec2{0.5f, -0.5f};
-                    tri.colour = colour::red;
-                    tri.rotation = body.r;
-                    tri.translation = {body.x, body.y};
-                    RenderAPI::draw(tri, 0);
-                    break;
+
+        {
+            // Render entities
+            auto view = m_registry.view<const Body, const Render>();
+            view.each([](const auto &body, const auto &render) {
+                switch (render.type) {
+                    case Render::Type::None:
+                        break;
+                    case Render::Type::Ship: {
+                        auto tri = Triangle();
+                        tri.vertices[0] = glm::vec2{-0.5f, -0.5f};
+                        tri.vertices[1] = glm::vec2{0.0f, 1.0f};
+                        tri.vertices[2] = glm::vec2{0.5f, -0.5f};
+                        tri.colour = colour::red;
+                        tri.rotation = body.r;
+                        tri.translation = {body.x, body.y};
+                        RenderAPI::draw(tri, 0);
+                        break;
+                    }
+                    case Render::Type::Asteroid: {
+                        auto quad = Quad();
+                        quad.vertices[0] = glm::vec2{-0.5f, -0.5f};
+                        quad.vertices[1] = glm::vec2{-0.5f, 0.5f};
+                        quad.vertices[2] = glm::vec2{0.5f, 0.5f};
+                        quad.vertices[3] = glm::vec2{0.5f, -0.5f};
+                        quad.colour = {0.8f, 0.8f, 0.8f};
+                        quad.rotation = body.r;
+                        quad.translation = {body.x, body.y};
+                        RenderAPI::draw(quad, 0);
+                        break;
+                    }
+                    default:
+                        break;
                 }
-                case Render::Type::Asteroid: {
+            });
+        }
+
+        {
+            // Render direction markers
+            auto view = m_registry.view<const Body, const Beacon>();
+            view.each([this](const auto &body, const auto &beacon) {
+                const glm::vec2 target = {body.x, body.y};
+                const auto diff = target - m_camera.position;
+
+                // Out of range
+                if (abs(diff.x) > beacon.range || abs(diff.y) > beacon.range || glm::length(diff) > beacon.range) {
+                    return;
+                }
+
+                auto indicator = diff;
+                if (indicator.x > m_camera.size.x / 2) {
+                    indicator *= (m_camera.size.x / 2) / indicator.x;
+                }
+                if (indicator.x < -m_camera.size.x / 2) {
+                    indicator *= (-m_camera.size.x / 2) / indicator.x;
+                }
+                if (indicator.y > m_camera.size.y / 2) {
+                    indicator *= (m_camera.size.y / 2) / indicator.y;
+                }
+                if (indicator.y < -m_camera.size.y / 2) {
+                    indicator *= (-m_camera.size.y / 2) / indicator.y;
+                }
+
+                // Direction indicator
+                if (indicator != diff) {
                     auto quad = Quad();
-                    quad.vertices[0] = glm::vec2{-0.5f, -0.5f};
-                    quad.vertices[1] = glm::vec2{-0.5f, 0.5f};
-                    quad.vertices[2] = glm::vec2{0.5f, 0.5f};
-                    quad.vertices[3] = glm::vec2{0.5f, -0.5f};
-                    quad.colour = {0.8f, 0.8f, 0.8f};
-                    quad.rotation = body.r;
-                    quad.translation = {body.x, body.y};
-                    RenderAPI::draw(quad, 0);
-                    break;
+                    quad.vertices[0] = glm::vec2{-0.1f, -0.1f};
+                    quad.vertices[1] = glm::vec2{-0.1f, 0.1f};
+                    quad.vertices[2] = glm::vec2{0.1f, 0.1f};
+                    quad.vertices[3] = glm::vec2{0.1f, -0.1f};
+                    quad.colour = {0.0f, 1.0f, 1.0f};
+                    quad.translation = m_camera.position + indicator;
+                    RenderAPI::draw(quad, 1.0f);
                 }
-                default:
-                    break;
-            }
-        });
+            });
+        }
+
         RenderAPI::end();
     }
 }

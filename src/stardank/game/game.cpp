@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include <space/components/acceleration.hpp>
+#include <space/components/beacon.hpp>
 #include <space/components/body.hpp>
 #include <space/components/engine.hpp>
 #include <space/components/render.hpp>
@@ -73,5 +74,6 @@ void Game::load_system(const space::System &system) {
         m_registry.emplace<Velocity>(
             entity, rand_between(-1.0f, 1.0f), rand_between(-1.0f, 1.0f), rand_between(-1.0f, 1.0f));
         m_registry.emplace<Render>(entity, Render::Type::Asteroid);
+        m_registry.emplace<Beacon>(entity, 10.0f);
     }
 }
