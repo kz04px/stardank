@@ -42,6 +42,25 @@ void Game::render() const noexcept {
 
         // Draw connections
 
+        // Draw selected region highlight
+        if (m_system_selected >= 0) {
+            const auto &system = m_region.systems.at(m_system_selected);
+
+            auto quad = Quad();
+            quad.vertices[0] = glm::vec2{-0.01f, -0.15f};
+            quad.vertices[1] = glm::vec2{-0.01f, 0.15f};
+            quad.vertices[2] = glm::vec2{0.01f, 0.15f};
+            quad.vertices[3] = glm::vec2{0.01f, -0.15f};
+            quad.colour = {0.0f, 1.0f, 0.0f};
+            quad.rotation = 0;
+
+            quad.translation = {system.x - 0.15f, system.y};
+            RenderAPI::draw(quad, 0);
+
+            quad.translation = {system.x + 0.15f, system.y};
+            RenderAPI::draw(quad, 0);
+        }
+
         // Title
         RenderAPI::draw_text("Map", 0.0f, 0.0f, 1.0f, 10.0f);
 
