@@ -23,23 +23,28 @@ Game::Game()
         std::vector<std::pair<int, int>> grids_available;
 
         // Create grid list
-        for (int i = 0; i < 10; ++i) {
-            for (int j = 0; j < 10; ++j) {
+        for (int i = 1; i < 9; ++i) {
+            for (int j = 1; j < 9; ++j) {
                 grids_available.push_back({i, j});
             }
         }
 
         // Create systems
-        for (int i = 0; i < 10 + rand() % 5 && !grids_available.empty(); ++i) {
-            const auto [grid_x, grid_y] = grids_available[rand() % grids_available.size()];
+        for (int i = 0; i < 30 + rand() % 20 && !grids_available.empty(); ++i) {
+            const auto idx = rand() % grids_available.size();
+            const auto [grid_x, grid_y] = grids_available.at(idx);
 
-            const float dx = static_cast<float>(rand()) / RAND_MAX;
-            const float dy = static_cast<float>(rand()) / RAND_MAX;
+            const float dx = 0.1f + 0.8f * static_cast<float>(rand()) / RAND_MAX;
+            const float dy = 0.1f + 0.8f * static_cast<float>(rand()) / RAND_MAX;
 
             const float x = grid_x + dx;
             const float y = grid_y + dy;
 
             m_region.systems.push_back({space::System::Status::Available, x, y, 0, 0.5f});
+
+            // Remove the grid
+            grids_available[idx] = grids_available.back();
+            grids_available.pop_back();
         }
     }
 
@@ -50,7 +55,11 @@ Game::Game()
     // Assign system ownership
     int i = 0;
     for (auto &system : m_region.systems) {
-        system.owner = i % 4 + 1;
+        if (i < 8) {
+            system.owner = 0;
+        } else {
+            system.owner = i % 2 + 1;
+        }
         i++;
     }
 }
