@@ -11,10 +11,17 @@ int main(int argc, char** argv) {
     std::cout << "Debug build!\n\n";
 #endif
 
+    int seed = time(0);
+
     CLI::App cli{"Stardank"};
     cli.set_version_flag("-v,--version", "Stardank v0.0.1", "Display Stardank version information");
+    cli.add_option("-s,--seed", seed, "Specify random seed value");
 
     CLI11_PARSE(cli, argc, argv);
+
+    srand(seed);
+
+    std::cout << "Random seed: " << seed << "\n";
 
     try {
         auto app = Application(argc, argv);
