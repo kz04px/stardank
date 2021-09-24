@@ -1,4 +1,11 @@
 #include "game.hpp"
+#include <space/components/acceleration.hpp>
+#include <space/components/body.hpp>
+#include <space/components/engine.hpp>
+#include <space/components/render.hpp>
+#include <space/components/velocity.hpp>
+
+using namespace space::components;
 
 Game::Game()
     : m_camera{},

@@ -1,8 +1,12 @@
+#include <space/components/body.hpp>
+#include <space/components/render.hpp>
 #include "../camera.hpp"
 #include "../renderer/quad.hpp"
 #include "../renderer/renderer.hpp"
 #include "../renderer/triangle.hpp"
 #include "game.hpp"
+
+using namespace space::components;
 
 static const Colour team_colours[] = {
     {0.8f, 0.8f, 0.8f},

@@ -2,15 +2,8 @@
 #define GAME_HPP
 
 #include <entt/entt.hpp>
-#include <space/components/acceleration.hpp>
-#include <space/components/body.hpp>
-#include <space/components/engine.hpp>
-#include <space/components/render.hpp>
-#include <space/components/velocity.hpp>
 #include <space/region.hpp>
 #include "../camera.hpp"
-
-using namespace space::components;
 
 struct Event;
 struct KeyPressEvent;

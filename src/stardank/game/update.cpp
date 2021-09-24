@@ -1,7 +1,13 @@
 #include <cmath>
 #include <iostream>
+#include <space/components/acceleration.hpp>
+#include <space/components/body.hpp>
+#include <space/components/engine.hpp>
+#include <space/components/velocity.hpp>
 #include "../inputs.hpp"
 #include "game.hpp"
+
+using namespace space::components;
 
 void inputs(entt::registry &registry) {
     auto view = registry.view<Engine>();
