@@ -144,6 +144,27 @@ void Game::render() const noexcept {
             });
         }
 
+        {
+            // Render selected entity
+            if (m_registry.valid(m_entity_selected)) {
+                const auto body = m_registry.get<Body>(m_entity_selected);
+
+                auto quad = Quad();
+                quad.vertices[0] = glm::vec2{-0.01f, -0.5f};
+                quad.vertices[1] = glm::vec2{-0.01f, 0.5f};
+                quad.vertices[2] = glm::vec2{0.01f, 0.5f};
+                quad.vertices[3] = glm::vec2{0.01f, -0.5f};
+                quad.colour = {0.0f, 1.0f, 0.0f};
+                quad.rotation = 0.0f;
+
+                quad.translation = {body.x - 0.5f - 0.15f, body.y};
+                RenderAPI::draw(quad, 1.0f);
+
+                quad.translation = {body.x + 0.5f + 0.15f, body.y};
+                RenderAPI::draw(quad, 1.0f);
+            }
+        }
+
         RenderAPI::end();
     }
 }

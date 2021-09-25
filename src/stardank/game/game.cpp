@@ -4,6 +4,7 @@
 #include <space/components/body.hpp>
 #include <space/components/engine.hpp>
 #include <space/components/render.hpp>
+#include <space/components/targetable.hpp>
 #include <space/components/velocity.hpp>
 
 using namespace space::components;
@@ -14,6 +15,7 @@ Game::Game()
       m_registry{},
       m_us{},
       m_system_selected{-1},
+      m_entity_selected{},
       m_window_width{},
       m_window_height{},
       m_map_view{true} {
@@ -84,5 +86,6 @@ void Game::load_system(const space::System &system) {
             entity, rand_between(-1.0f, 1.0f), rand_between(-1.0f, 1.0f), rand_between(-1.0f, 1.0f));
         m_registry.emplace<Render>(entity, Render::Type::Asteroid);
         m_registry.emplace<Beacon>(entity, 10.0f);
+        m_registry.emplace<Targetable>(entity);
     }
 }

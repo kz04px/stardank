@@ -37,7 +37,7 @@ struct Camera {
         const auto new_y = 2.0f * y - 1.0f;
         const auto asd = glm::vec4{new_x, new_y, 0.0f, 1.0f};
         const auto zzz = glm::inverse(matrix()) * asd;
-        return {zzz.x / zzz.w, -zzz.y / zzz.w};
+        return {zzz.x / zzz.w, zzz.y / zzz.w};
     }
 
     void resize(const float w, const float h) noexcept {
