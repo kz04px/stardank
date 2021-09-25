@@ -1,7 +1,9 @@
 #include <space/components/beacon.hpp>
+#include <space/components/beam.hpp>
 #include <space/components/body.hpp>
 #include <space/components/render.hpp>
 #include "../camera.hpp"
+#include "../renderer/line.hpp"
 #include "../renderer/quad.hpp"
 #include "../renderer/renderer.hpp"
 #include "../renderer/triangle.hpp"
@@ -163,6 +165,22 @@ void Game::render() const noexcept {
                 quad.translation = {body.x + 0.5f + 0.15f, body.y};
                 RenderAPI::draw(quad, 1.0f);
             }
+        }
+
+        {
+            // Render beams
+            auto view = m_registry.view<const Beam>();
+            view.each([this](const auto &beam) {
+                const auto from = m_registry.get<Body>(beam.parent);
+                const auto to = m_registry.get<Body>(beam.target);
+
+                auto line = Line();
+                line.vertices[0] = {0.0f, 0.0f};
+                line.vertices[1] = {to.x - from.x, to.y - from.y};
+                line.colour = {1.0f, 0.0f, 0.0f};
+                line.translation = {from.x, from.y};
+                RenderAPI::draw(line, 1.0f);
+            });
         }
 
         RenderAPI::end();

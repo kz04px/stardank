@@ -3,6 +3,7 @@
 #include <space/components/beacon.hpp>
 #include <space/components/body.hpp>
 #include <space/components/engine.hpp>
+#include <space/components/laser.hpp>
 #include <space/components/render.hpp>
 #include <space/components/targetable.hpp>
 #include <space/components/velocity.hpp>
@@ -75,6 +76,7 @@ void Game::load_system(const space::System &system) {
         m_registry.emplace<Acceleration>(m_us, 0.0f, 0.0f);
         m_registry.emplace<Engine>(m_us);
         m_registry.emplace<Render>(m_us, Render::Type::Ship);
+        m_registry.emplace<Laser>(m_us);
     }
 
     // Add asteroids

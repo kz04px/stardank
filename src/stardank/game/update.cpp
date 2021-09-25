@@ -1,8 +1,10 @@
 #include <cmath>
 #include <iostream>
 #include <space/components/acceleration.hpp>
+#include <space/components/beam.hpp>
 #include <space/components/body.hpp>
 #include <space/components/engine.hpp>
+#include <space/components/laser.hpp>
 #include <space/components/velocity.hpp>
 #include "../inputs.hpp"
 #include "game.hpp"
@@ -123,12 +125,82 @@ void position(entt::registry &registry, const float dt) {
     }
 }
 
+void laser(entt::registry &registry, const float dt, const entt::entity target) {
+    // Gotta be a valid target
+    if (!registry.valid(target)) {
+        return;
+    }
+
+    /*
+    // Target has to have a position
+    if (!registry.has<Body>(target)) {
+        return;
+    }
+    */
+
+    const auto target_body = registry.get<Body>(target);
+    auto view = registry.view<const Body, Laser>();
+
+    for (auto entity : view) {
+        // Can't shoot ourselves
+        if (entity == target) {
+            return;
+        }
+
+        const auto &body = view.get<const Body>(entity);
+        auto &laser = view.get<Laser>(entity);
+
+        if (Inputs::is_pressed(70) && laser.cooldown <= 0.0f) {
+            const auto dx = body.x - target_body.x;
+            const auto dy = body.y - target_body.y;
+            const auto dist = sqrt(dx * dx + dy * dy);
+
+            if (dist <= laser.range) {
+                laser.cooldown = 1.0f;
+
+                // Create beam entity
+                auto beam = registry.create();
+                registry.emplace<Beam>(beam, entity, target, Beam::Type::Damage, 3.0f, 1.0f, laser.range);
+            }
+        }
+
+        // Reduce cooldown with time
+        laser.cooldown -= dt;
+    }
+}
+
+void beam(entt::registry &registry, const float dt) {
+    auto view = registry.view<Beam>();
+
+    view.each([&registry, dt](const entt::entity entity, auto &beam) {
+        // Duration
+        beam.duration -= dt;
+        if (beam.duration <= 0.0f) {
+            registry.destroy(entity);
+            return;
+        }
+
+        // Range
+        const auto from = registry.get<Body>(beam.parent);
+        const auto to = registry.get<Body>(beam.target);
+        const auto dx = to.x - from.x;
+        const auto dy = to.y - from.y;
+        const auto dist = sqrt(dx * dx + dy * dy);
+        if (dist > beam.max_dist) {
+            registry.destroy(entity);
+            return;
+        }
+    });
+}
+
 void Game::update(const float dt) {
     if (!m_map_view) {
         inputs(m_registry);
         magic_engines(m_registry);
         acceleration(m_registry, dt);
         position(m_registry, dt);
+        laser(m_registry, dt, m_entity_selected);
+        beam(m_registry, dt);
 
         const auto pos = m_registry.get<Body>(m_us);
         m_camera.position = {pos.x, pos.y};
