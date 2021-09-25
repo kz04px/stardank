@@ -8,6 +8,7 @@
 #include <space/components/laser.hpp>
 #include <space/components/render.hpp>
 #include <space/components/targetable.hpp>
+#include <space/components/targeter.hpp>
 #include <space/components/velocity.hpp>
 
 using namespace space::components;
@@ -18,7 +19,6 @@ Game::Game()
       m_registry{},
       m_us{},
       m_system_selected{-1},
-      m_entity_selected{},
       m_window_width{},
       m_window_height{},
       m_map_view{true} {
@@ -79,6 +79,7 @@ void Game::load_system(const space::System &system) {
         m_registry.emplace<Engine>(m_us);
         m_registry.emplace<Render>(m_us, Render::Type::Ship);
         m_registry.emplace<Laser>(m_us);
+        m_registry.emplace<Targeter>(m_us);
         m_registry.emplace<Commands>(m_us);
     }
 

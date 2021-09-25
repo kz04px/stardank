@@ -2,6 +2,7 @@
 #include <space/components/beam.hpp>
 #include <space/components/body.hpp>
 #include <space/components/render.hpp>
+#include <space/components/targeter.hpp>
 #include "../camera.hpp"
 #include "../renderer/line.hpp"
 #include "../renderer/quad.hpp"
@@ -148,8 +149,9 @@ void Game::render() const noexcept {
 
         {
             // Render selected entity
-            if (m_registry.valid(m_entity_selected)) {
-                const auto body = m_registry.get<Body>(m_entity_selected);
+            auto targeter = m_registry.get<Targeter>(m_us);
+            if (m_registry.valid(targeter.target) && m_registry.all_of<Body>(targeter.target)) {
+                const auto body = m_registry.get<Body>(targeter.target);
 
                 auto quad = Quad();
                 quad.vertices[0] = glm::vec2{-0.01f, -0.5f};

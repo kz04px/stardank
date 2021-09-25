@@ -7,6 +7,7 @@
 #include <space/components/engine.hpp>
 #include <space/components/health.hpp>
 #include <space/components/laser.hpp>
+#include <space/components/targeter.hpp>
 #include <space/components/velocity.hpp>
 #include "../inputs.hpp"
 #include "game.hpp"
@@ -141,29 +142,24 @@ void position(entt::registry &registry, const float dt) {
     }
 }
 
-void laser(entt::registry &registry, const float dt, const entt::entity target) {
+void laser(entt::registry &registry, const float dt) {
     auto view = registry.view<const Body, const Targeter, const Commands, Laser>();
-    if (!registry.valid(target)) {
-        return;
-    }
-
-    /*
-    // Target has to have a position
-    if (!registry.has<Body>(target)) {
-        return;
-    }
-    */
-
-    const auto target_body = registry.get<Body>(target);
-    auto view = registry.view<const Body, Laser>();
 
     for (auto entity : view) {
+        const auto targeter = registry.get<Targeter>(entity);
+
         // Can't shoot ourselves
-        if (entity == target) {
+        if (targeter.target == entity) {
+            return;
+        }
+
+        // Target must be valid and have a body
+        if (!registry.valid(targeter.target) || !registry.all_of<Body>(targeter.target)) {
             return;
         }
 
         const auto &commands = view.get<const Commands>(entity);
+        const auto target_body = registry.get<Body>(targeter.target);
         const auto &body = view.get<const Body>(entity);
         auto &laser = view.get<Laser>(entity);
 
@@ -177,7 +173,7 @@ void laser(entt::registry &registry, const float dt, const entt::entity target) 
 
                 // Create beam entity
                 auto beam = registry.create();
-                registry.emplace<Beam>(beam, entity, target, Beam::Type::Damage, 3.0f, 1.0f, laser.range);
+                registry.emplace<Beam>(beam, entity, targeter.target, Beam::Type::Damage, 3.0f, 1.0f, laser.range);
             }
         }
 
@@ -241,11 +237,11 @@ void health(entt::registry &registry) {
 
 void Game::update(const float dt) {
     if (!m_map_view) {
-        inputs(m_registry);
+        commands(m_registry, m_us);
         magic_engines(m_registry);
         acceleration(m_registry, dt);
         position(m_registry, dt);
-        laser(m_registry, dt, m_entity_selected);
+        laser(m_registry, dt);
         beam(m_registry, dt);
         health(m_registry);
 

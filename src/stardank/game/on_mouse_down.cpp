@@ -2,6 +2,7 @@
 #include <iostream>
 #include <space/components/body.hpp>
 #include <space/components/targetable.hpp>
+#include <space/components/targeter.hpp>
 #include "../events/mouse_event.hpp"
 #include "game.hpp"
 
@@ -41,24 +42,12 @@ void Game::on_mouse_down(MouseDownEvent &e) {
                 // Game
                 auto target = entt::entity();
                 float closest_dist = std::numeric_limits<float>::max();
-                auto view = m_registry.view<Body, Targetable>();
-                auto [world_x, world_y] =
+                const auto [world_x, world_y] =
                     m_camera.project(static_cast<float>(e.x()) / m_window_width,
                                      static_cast<float>(m_window_height - e.y() - 1) / m_window_height);
 
-                {
-                    const auto x = e.x();
-                    const auto y = e.y();
-                    const auto dx = static_cast<float>(e.x()) / m_window_width;
-                    const auto dy = 1.0f - static_cast<float>(e.y()) / m_window_height;
-                    const auto [wx, wy] = m_camera.project(dx, dy);
-
-                    std::cout << "x, y:   " << x << ", " << y << "\n";
-                    std::cout << "dx, dy: " << dx << ", " << dy << "\n";
-                    std::cout << "wx, wy: " << wx << ", " << wy << "\n";
-                    std::cout << "\n";
-                }
-
+                // Find closest targetable entity
+                auto view = m_registry.view<Body, Targetable>();
                 view.each([&target, &closest_dist, world_x, world_y](auto entity, auto &body) {
                     const auto dx = world_x - body.x;
                     const auto dy = world_y - body.y;
@@ -70,10 +59,12 @@ void Game::on_mouse_down(MouseDownEvent &e) {
                     }
                 });
 
+                auto &targeter = m_registry.get<Targeter>(m_us);
+
                 if (closest_dist <= 2.5f) {
-                    m_entity_selected = target;
+                    targeter.target = target;
                 } else {
-                    m_entity_selected = entt::entity();
+                    targeter.target = entt::entity();
                 }
             }
             break;

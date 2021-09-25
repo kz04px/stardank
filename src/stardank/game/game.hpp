@@ -58,7 +58,6 @@ class Game {
     entt::registry m_registry;
     entt::entity m_us;
     int m_system_selected;
-    entt::entity m_entity_selected;
     int m_window_width;
     int m_window_height;
     bool m_map_view;
