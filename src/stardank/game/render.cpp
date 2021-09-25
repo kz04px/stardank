@@ -171,6 +171,11 @@ void Game::render() const noexcept {
             // Render beams
             auto view = m_registry.view<const Beam>();
             view.each([this](const auto &beam) {
+                // Make sure relevant entities still exist
+                if (!m_registry.valid(beam.parent) || !m_registry.valid(beam.target)) {
+                    return;
+                }
+
                 const auto from = m_registry.get<Body>(beam.parent);
                 const auto to = m_registry.get<Body>(beam.target);
 

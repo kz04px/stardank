@@ -3,6 +3,7 @@
 #include <space/components/beacon.hpp>
 #include <space/components/body.hpp>
 #include <space/components/engine.hpp>
+#include <space/components/health.hpp>
 #include <space/components/laser.hpp>
 #include <space/components/render.hpp>
 #include <space/components/targetable.hpp>
@@ -89,5 +90,6 @@ void Game::load_system(const space::System &system) {
         m_registry.emplace<Render>(entity, Render::Type::Asteroid);
         m_registry.emplace<Beacon>(entity, 10.0f);
         m_registry.emplace<Targetable>(entity);
+        m_registry.emplace<Health>(entity, 5.0f);
     }
 }

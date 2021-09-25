@@ -4,6 +4,7 @@
 #include <space/components/beam.hpp>
 #include <space/components/body.hpp>
 #include <space/components/engine.hpp>
+#include <space/components/health.hpp>
 #include <space/components/laser.hpp>
 #include <space/components/velocity.hpp>
 #include "../inputs.hpp"
@@ -173,6 +174,12 @@ void beam(entt::registry &registry, const float dt) {
     auto view = registry.view<Beam>();
 
     view.each([&registry, dt](const entt::entity entity, auto &beam) {
+        // Target must be valid
+        if (!registry.valid(beam.target)) {
+            registry.destroy(entity);
+            return;
+        }
+
         // Duration
         beam.duration -= dt;
         if (beam.duration <= 0.0f) {
@@ -190,6 +197,29 @@ void beam(entt::registry &registry, const float dt) {
             registry.destroy(entity);
             return;
         }
+
+        // Effects
+        switch (beam.type) {
+            case Beam::Type::Damage: {
+                if (registry.all_of<Health>(beam.target)) {
+                    auto &health = registry.get<Health>(beam.target);
+                    health.remaining -= beam.power * dt;
+                }
+                break;
+            }
+            default:
+                break;
+        }
+    });
+}
+
+void health(entt::registry &registry) {
+    auto view = registry.view<const Health>();
+
+    view.each([&registry](const entt::entity entity, const auto &health) {
+        if (health.remaining <= 0.0f) {
+            registry.destroy(entity);
+        }
     });
 }
 
@@ -201,6 +231,7 @@ void Game::update(const float dt) {
         position(m_registry, dt);
         laser(m_registry, dt, m_entity_selected);
         beam(m_registry, dt);
+        health(m_registry);
 
         const auto pos = m_registry.get<Body>(m_us);
         m_camera.position = {pos.x, pos.y};
