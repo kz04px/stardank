@@ -3,6 +3,7 @@
 #include <space/components/acceleration.hpp>
 #include <space/components/beam.hpp>
 #include <space/components/body.hpp>
+#include <space/components/commands.hpp>
 #include <space/components/engine.hpp>
 #include <space/components/health.hpp>
 #include <space/components/laser.hpp>
@@ -12,34 +13,43 @@
 
 using namespace space::components;
 
-void inputs(entt::registry &registry) {
-    auto view = registry.view<Engine>();
+void commands(entt::registry &registry, const entt::entity us) {
+    if (!registry.valid(us) || !registry.all_of<Commands>(us)) {
+        return;
+    }
 
-    view.each([](auto &engine) {
-        engine.forwards = Inputs::is_pressed(87);
-        engine.backwards = Inputs::is_pressed(83);
-        engine.cw = Inputs::is_pressed(68);
-        engine.ccw = Inputs::is_pressed(65);
+    auto &commands = registry.get<Commands>(us);
 
-        // Let's not have one direction override the other
-        if (engine.forwards && engine.backwards) {
-            engine.forwards = false;
-            engine.backwards = false;
-        }
-        if (engine.cw && engine.ccw) {
-            engine.cw = false;
-            engine.ccw = false;
-        }
-    });
+    commands.forwards = Inputs::is_pressed(87);
+    commands.backwards = Inputs::is_pressed(83);
+    commands.left = Inputs::is_pressed(65);
+    commands.right = Inputs::is_pressed(68);
+    commands.shoot = Inputs::is_pressed(70);
+
+    // Let's not have one input override the other
+    if (commands.forwards && commands.backwards) {
+        commands.forwards = false;
+        commands.backwards = false;
+    }
+    if (commands.left && commands.right) {
+        commands.left = false;
+        commands.right = false;
+    }
 }
 
 void engines(entt::registry &registry) {
-    auto view = registry.view<Acceleration, Body, Engine>();
+    auto view = registry.view<Acceleration, Engine, Body, Commands>();
 
     for (auto entity : view) {
         auto &acc = view.get<Acceleration>(entity);
+        auto &engine = view.get<Engine>(entity);
         const auto &body = view.get<Body>(entity);
-        const auto &engine = view.get<Engine>(entity);
+        const auto &commands = registry.get<Commands>(entity);
+
+        engine.forwards = commands.forwards;
+        engine.backwards = commands.backwards;
+        engine.cw = commands.right;
+        engine.ccw = commands.left;
 
         // Forwards/Backwards
         if (engine.forwards) {
@@ -65,18 +75,23 @@ void engines(entt::registry &registry) {
 }
 
 void magic_engines(entt::registry &registry) {
-    auto view = registry.view<Velocity, Body, Engine>();
+    auto view = registry.view<Velocity, Body, Engine, Commands>();
 
     for (auto entity : view) {
         auto &vel = view.get<Velocity>(entity);
+        auto &engine = view.get<Engine>(entity);
         const auto &body = view.get<Body>(entity);
-        const auto &engine = view.get<Engine>(entity);
+        const auto &commands = registry.get<Commands>(entity);
+
+        engine.forwards = commands.forwards;
+        engine.backwards = commands.backwards;
+        engine.cw = commands.right;
+        engine.ccw = commands.left;
 
         // Forwards/Backwards
         if (engine.forwards) {
             vel.dx = engine.max_thrust * sin(body.r);
             vel.dy = engine.max_thrust * cos(body.r);
-
         } else if (engine.backwards) {
             vel.dx = -engine.max_thrust * sin(body.r);
             vel.dy = -engine.max_thrust * cos(body.r);
@@ -127,7 +142,7 @@ void position(entt::registry &registry, const float dt) {
 }
 
 void laser(entt::registry &registry, const float dt, const entt::entity target) {
-    // Gotta be a valid target
+    auto view = registry.view<const Body, const Targeter, const Commands, Laser>();
     if (!registry.valid(target)) {
         return;
     }
@@ -148,10 +163,11 @@ void laser(entt::registry &registry, const float dt, const entt::entity target) 
             return;
         }
 
+        const auto &commands = view.get<const Commands>(entity);
         const auto &body = view.get<const Body>(entity);
         auto &laser = view.get<Laser>(entity);
 
-        if (Inputs::is_pressed(70) && laser.cooldown <= 0.0f) {
+        if (commands.shoot && laser.cooldown <= 0.0f) {
             const auto dx = body.x - target_body.x;
             const auto dy = body.y - target_body.y;
             const auto dist = sqrt(dx * dx + dy * dy);
