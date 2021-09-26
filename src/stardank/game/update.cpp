@@ -150,12 +150,12 @@ void laser(entt::registry &registry, const float dt) {
 
         // Can't shoot ourselves
         if (targeter.target == entity) {
-            return;
+            continue;
         }
 
         // Target must be valid and have a body
         if (!registry.valid(targeter.target) || !registry.all_of<Body>(targeter.target)) {
-            return;
+            continue;
         }
 
         const auto &commands = view.get<const Commands>(entity);
