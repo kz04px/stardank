@@ -1,6 +1,7 @@
 #include <cmath>
 #include <iostream>
 #include <space/components/acceleration.hpp>
+#include <space/components/ai_random.hpp>
 #include <space/components/beam.hpp>
 #include <space/components/body.hpp>
 #include <space/components/commands.hpp>
@@ -242,9 +243,86 @@ void health(entt::registry &registry) {
     });
 }
 
+void ai_random(entt::registry &registry, const float dt) {
+    auto view = registry.view<Commands, AIRandom, const Body>();
+
+    for (auto entity : view) {
+        auto &commands = registry.get<Commands>(entity);
+        auto &ai = registry.get<AIRandom>(entity);
+        const auto &body = registry.get<const Body>(entity);
+
+        ai.duration += dt;
+
+        // Reset commands
+        commands.forwards = false;
+        commands.backwards = false;
+        commands.left = false;
+        commands.right = false;
+        commands.shoot = false;
+
+        switch (ai.stage) {
+            case AIRandom::Stage::Wait:
+                if (ai.duration >= 1.0f) {
+                    ai.stage = AIRandom::Stage::Turn;
+                    ai.duration = 0.0f;
+                    ai.memory[0] = static_cast<float>(rand()) / RAND_MAX * 2.0f * M_PI;
+                }
+                break;
+            case AIRandom::Stage::Turn:
+                if (ai.duration >= 3.0f) {
+                    ai.stage = AIRandom::Stage::Travel;
+                    ai.duration = 0.0f;
+                    break;
+                }
+
+                if (body.r > ai.memory[0]) {
+                    commands.left = true;
+                    commands.right = false;
+                } else if (body.r < ai.memory[0]) {
+                    commands.left = false;
+                    commands.right = true;
+                } else {
+                    commands.left = false;
+                    commands.right = false;
+                }
+                break;
+            case AIRandom::Stage::Travel:
+                if (ai.duration >= 1.0f) {
+                    ai.stage = AIRandom::Stage::Target;
+                    ai.duration = 0.0f;
+                    break;
+                }
+
+                commands.forwards = true;
+                commands.left = false;
+                commands.right = false;
+                break;
+            case AIRandom::Stage::Target:
+                ai.stage = AIRandom::Stage::Wait;
+                break;
+            case AIRandom::Stage::Engage:
+                commands.shoot = true;
+                break;
+            default:
+                break;
+        }
+
+        // Let's not have one command override the other
+        if (commands.forwards && commands.backwards) {
+            commands.forwards = false;
+            commands.backwards = false;
+        }
+        if (commands.left && commands.right) {
+            commands.left = false;
+            commands.right = false;
+        }
+    }
+}
+
 void Game::update(const float dt) {
     if (!m_map_view) {
         commands(m_registry, m_us);
+        ai_random(m_registry, dt);
         magic_engines(m_registry);
         acceleration(m_registry, dt);
         position(m_registry, dt);

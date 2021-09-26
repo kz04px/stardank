@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include <space/components/acceleration.hpp>
+#include <space/components/ai_random.hpp>
 #include <space/components/beacon.hpp>
 #include <space/components/body.hpp>
 #include <space/components/commands.hpp>
@@ -81,6 +82,24 @@ void Game::load_system(const space::System &system) {
         m_registry.emplace<Laser>(m_us);
         m_registry.emplace<Targeter>(m_us);
         m_registry.emplace<Commands>(m_us);
+        m_registry.emplace<Targetable>(m_us);
+        m_registry.emplace<Health>(m_us, 10.0f);
+    }
+
+    // Add other ship
+    {
+        const auto entity = m_registry.create();
+        m_registry.emplace<Body>(entity, 2.0f, 0.0f, 0.0f);
+        m_registry.emplace<Velocity>(entity, 0.0f, 0.0f);
+        m_registry.emplace<Acceleration>(entity, 0.0f, 0.0f);
+        m_registry.emplace<Engine>(entity);
+        m_registry.emplace<Render>(entity, Render::Type::Ship);
+        m_registry.emplace<Laser>(entity);
+        m_registry.emplace<Targeter>(entity);
+        m_registry.emplace<Commands>(entity);
+        m_registry.emplace<AIRandom>(entity);
+        m_registry.emplace<Targetable>(entity);
+        m_registry.emplace<Health>(entity, 10.0f);
     }
 
     // Add asteroids
