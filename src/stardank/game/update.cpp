@@ -39,13 +39,13 @@ void commands(entt::registry &registry, const entt::entity us) {
 }
 
 void engines(entt::registry &registry) {
-    auto view = registry.view<Acceleration, Engine, Body, Commands>();
+    auto view = registry.view<Acceleration, Engine, const Body, const Commands>();
 
     for (auto entity : view) {
         auto &acc = view.get<Acceleration>(entity);
         auto &engine = view.get<Engine>(entity);
-        const auto &body = view.get<Body>(entity);
-        const auto &commands = registry.get<Commands>(entity);
+        const auto &body = view.get<const Body>(entity);
+        const auto &commands = registry.get<const Commands>(entity);
 
         engine.forwards = commands.forwards;
         engine.backwards = commands.backwards;
@@ -76,13 +76,13 @@ void engines(entt::registry &registry) {
 }
 
 void magic_engines(entt::registry &registry) {
-    auto view = registry.view<Velocity, Body, Engine, Commands>();
+    auto view = registry.view<Velocity, Engine, const Body, const Commands>();
 
     for (auto entity : view) {
         auto &vel = view.get<Velocity>(entity);
         auto &engine = view.get<Engine>(entity);
-        const auto &body = view.get<Body>(entity);
-        const auto &commands = registry.get<Commands>(entity);
+        const auto &body = view.get<const Body>(entity);
+        const auto &commands = registry.get<const Commands>(entity);
 
         engine.forwards = commands.forwards;
         engine.backwards = commands.backwards;
@@ -126,11 +126,11 @@ void acceleration(entt::registry &registry, const float dt) {
 }
 
 void position(entt::registry &registry, const float dt) {
-    auto view = registry.view<Body, Velocity>();  // , Acceleration
+    auto view = registry.view<Body, const Velocity>();  // , Acceleration
 
     for (auto entity : view) {
         auto &body = view.get<Body>(entity);
-        const auto &vel = view.get<Velocity>(entity);
+        const auto &vel = view.get<const Velocity>(entity);
         // const auto &acc = view.get<Acceleration>(entity);
 
         // s = ut + 1/2at^2
@@ -146,7 +146,7 @@ void laser(entt::registry &registry, const float dt) {
     auto view = registry.view<const Body, const Targeter, const Commands, Laser>();
 
     for (auto entity : view) {
-        const auto targeter = registry.get<Targeter>(entity);
+        const auto &targeter = registry.get<const Targeter>(entity);
 
         // Can't shoot ourselves
         if (targeter.target == entity) {
@@ -159,7 +159,7 @@ void laser(entt::registry &registry, const float dt) {
         }
 
         const auto &commands = view.get<const Commands>(entity);
-        const auto target_body = registry.get<Body>(targeter.target);
+        const auto &target_body = registry.get<const Body>(targeter.target);
         const auto &body = view.get<const Body>(entity);
         auto &laser = view.get<Laser>(entity);
 

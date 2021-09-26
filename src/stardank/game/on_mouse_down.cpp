@@ -48,8 +48,8 @@ void Game::on_mouse_down(MouseDownEvent &e) {
                                          static_cast<float>(m_window_height - e.y() - 1) / m_window_height);
 
                     // Find closest targetable entity
-                    auto view = m_registry.view<Body, Targetable>();
-                    view.each([&target, &closest_dist, world_x, world_y](auto entity, auto &body) {
+                    auto view = m_registry.view<const Body, const Targetable>();
+                    view.each([&target, &closest_dist, world_x, world_y](auto entity, const auto &body) {
                         const auto dx = world_x - body.x;
                         const auto dy = world_y - body.y;
                         const auto dist = sqrt(dx * dx + dy * dy);
