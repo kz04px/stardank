@@ -147,8 +147,8 @@ void Game::render() const noexcept {
             });
         }
 
-        {
-            // Render selected entity
+        // Render targeted entity
+        if (m_registry.all_of<Targeter>(m_us)) {
             auto targeter = m_registry.get<Targeter>(m_us);
             if (m_registry.valid(targeter.target) && m_registry.all_of<Body>(targeter.target)) {
                 const auto body = m_registry.get<Body>(targeter.target);

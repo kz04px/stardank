@@ -40,31 +40,33 @@ void Game::on_mouse_down(MouseDownEvent &e) {
                 // Overlay
 
                 // Game
-                entt::entity target = entt::null;
-                float closest_dist = std::numeric_limits<float>::max();
-                const auto [world_x, world_y] =
-                    m_camera.project(static_cast<float>(e.x()) / m_window_width,
-                                     static_cast<float>(m_window_height - e.y() - 1) / m_window_height);
+                if (m_registry.all_of<Targeter>(m_us)) {
+                    entt::entity target = entt::null;
+                    float closest_dist = std::numeric_limits<float>::max();
+                    const auto [world_x, world_y] =
+                        m_camera.project(static_cast<float>(e.x()) / m_window_width,
+                                         static_cast<float>(m_window_height - e.y() - 1) / m_window_height);
 
-                // Find closest targetable entity
-                auto view = m_registry.view<Body, Targetable>();
-                view.each([&target, &closest_dist, world_x, world_y](auto entity, auto &body) {
-                    const auto dx = world_x - body.x;
-                    const auto dy = world_y - body.y;
-                    const auto dist = sqrt(dx * dx + dy * dy);
+                    // Find closest targetable entity
+                    auto view = m_registry.view<Body, Targetable>();
+                    view.each([&target, &closest_dist, world_x, world_y](auto entity, auto &body) {
+                        const auto dx = world_x - body.x;
+                        const auto dy = world_y - body.y;
+                        const auto dist = sqrt(dx * dx + dy * dy);
 
-                    if (dist < closest_dist) {
-                        target = entity;
-                        closest_dist = dist;
+                        if (dist < closest_dist) {
+                            target = entity;
+                            closest_dist = dist;
+                        }
+                    });
+
+                    auto &targeter = m_registry.get<Targeter>(m_us);
+
+                    if (closest_dist <= 2.5f) {
+                        targeter.target = target;
+                    } else {
+                        targeter.target = entt::null;
                     }
-                });
-
-                auto &targeter = m_registry.get<Targeter>(m_us);
-
-                if (closest_dist <= 2.5f) {
-                    targeter.target = target;
-                } else {
-                    targeter.target = entt::null;
                 }
             }
             break;
