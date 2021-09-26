@@ -17,7 +17,7 @@ Game::Game()
     : m_camera{},
       m_region{},
       m_registry{},
-      m_us{},
+      m_us{entt::null},
       m_system_selected{-1},
       m_window_width{},
       m_window_height{},

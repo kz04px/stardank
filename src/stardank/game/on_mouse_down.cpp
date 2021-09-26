@@ -40,7 +40,7 @@ void Game::on_mouse_down(MouseDownEvent &e) {
                 // Overlay
 
                 // Game
-                auto target = entt::entity();
+                entt::entity target = entt::null;
                 float closest_dist = std::numeric_limits<float>::max();
                 const auto [world_x, world_y] =
                     m_camera.project(static_cast<float>(e.x()) / m_window_width,
@@ -64,7 +64,7 @@ void Game::on_mouse_down(MouseDownEvent &e) {
                 if (closest_dist <= 2.5f) {
                     targeter.target = target;
                 } else {
-                    targeter.target = entt::entity();
+                    targeter.target = entt::null;
                 }
             }
             break;

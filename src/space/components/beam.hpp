@@ -11,8 +11,8 @@ struct Beam {
         Damage = 0,
     };
 
-    entt::entity parent;
-    entt::entity target;
+    entt::entity parent = entt::null;
+    entt::entity target = entt::null;
     Type type = Type::Damage;
     float duration = 1.0f;
     float power = 1.0f;
