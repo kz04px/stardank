@@ -139,6 +139,13 @@ void position(entt::registry &registry, const float dt) {
 
         // Angular
         body.r += vel.angular * dt;  // + 0.5 * acc.angular * dt * dt;
+
+        // Normalise rotation
+        if (body.r >= 2.0f * M_PI) {
+            body.r -= 2.0f * M_PI;
+        } else if (body.r < 0.0f) {
+            body.r += 2.0f * M_PI;
+        }
     }
 }
 
