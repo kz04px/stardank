@@ -1,6 +1,8 @@
 #include <cmath>
+#include <glm/gtx/vector_angle.hpp>
 #include <iostream>
 #include <space/components/acceleration.hpp>
+#include <space/components/ai_follow.hpp>
 #include <space/components/ai_random.hpp>
 #include <space/components/beam.hpp>
 #include <space/components/body.hpp>
@@ -383,10 +385,50 @@ void trailer(entt::registry &registry, const float dt) {
     });
 }
 
+void ai_follow(entt::registry &registry, const float dt) {
+    auto view = registry.view<Commands, const Body, const Targeter, const Velocity, const AIFollow>();
+
+    for (auto entity : view) {
+        auto &commands = registry.get<Commands>(entity);
+        const auto &body = registry.get<const Body>(entity);
+        const auto &targeter = registry.get<const Targeter>(entity);
+        const auto &velocity = registry.get<const Velocity>(entity);
+
+        // Reset commands
+        commands.forwards = false;
+        commands.backwards = false;
+        commands.left = false;
+        commands.right = false;
+        commands.shoot = false;
+
+        // No target or target body?
+        if (!registry.valid(targeter.target) || !registry.all_of<Body>(targeter.target)) {
+            continue;
+        }
+
+        // Find target
+        const auto target_body = registry.get<const Body>(targeter.target);
+        const auto dx = target_body.x - body.x;
+        const auto dy = target_body.y - body.y;
+        const auto direction_travel = glm::normalize(glm::vec2{velocity.dx, velocity.dy});
+        const auto direction_target = glm::normalize(glm::vec2{dx, dy});
+        const auto angle = glm::orientedAngle(direction_travel, direction_target);
+
+        // Steer & go
+        commands.forwards = true;
+        if (angle > 0) {
+            commands.left = true;
+        } else if (angle < 0) {
+            commands.right = true;
+        }
+    }
+}
+
 void Game::update(const float dt) {
     if (!m_map_view) {
         commands(m_registry, m_us);
         ai_random(m_registry, dt);
+        ai_follow(m_registry, dt);
         magic_engines(m_registry);
         acceleration(m_registry, dt);
         position(m_registry, dt);
