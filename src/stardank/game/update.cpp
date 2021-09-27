@@ -6,8 +6,10 @@
 #include <space/components/body.hpp>
 #include <space/components/commands.hpp>
 #include <space/components/engine.hpp>
+#include <space/components/fade.hpp>
 #include <space/components/health.hpp>
 #include <space/components/laser.hpp>
+#include <space/components/render.hpp>
 #include <space/components/targeter.hpp>
 #include <space/components/velocity.hpp>
 #include "../inputs.hpp"
@@ -319,6 +321,16 @@ void ai_random(entt::registry &registry, const float dt) {
     }
 }
 
+void fader(entt::registry &registry, const float dt) {
+    auto view = registry.view<Fade, Render>();
+
+    view.each([&registry, dt](auto &fade, auto &render) {
+        fade.current += dt;
+        fade.current = std::min(fade.total, fade.current);
+        render.a = 1.0f - fade.current / fade.total;
+    });
+}
+
 void Game::update(const float dt) {
     if (!m_map_view) {
         commands(m_registry, m_us);
@@ -329,6 +341,7 @@ void Game::update(const float dt) {
         laser(m_registry, dt);
         beam(m_registry, dt);
         health(m_registry);
+        fader(m_registry, dt);
 
         const auto pos = m_registry.get<Body>(m_us);
         m_camera.position = {pos.x, pos.y};
