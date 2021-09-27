@@ -91,10 +91,10 @@ void Game::render() const noexcept {
                     }
                     case Render::Type::Asteroid: {
                         auto quad = Quad();
-                        quad.vertices[0] = glm::vec2{-0.5f, -0.5f};
-                        quad.vertices[1] = glm::vec2{-0.5f, 0.5f};
-                        quad.vertices[2] = glm::vec2{0.5f, 0.5f};
-                        quad.vertices[3] = glm::vec2{0.5f, -0.5f};
+                        quad.vertices[0] = glm::vec2{-body.hw, -body.hh};
+                        quad.vertices[1] = glm::vec2{-body.hw, body.hh};
+                        quad.vertices[2] = glm::vec2{body.hw, body.hh};
+                        quad.vertices[3] = glm::vec2{body.hw, -body.hh};
                         quad.colour = {0.8f, 0.8f, 0.8f};
                         quad.rotation = body.r;
                         quad.translation = {body.x, body.y};
