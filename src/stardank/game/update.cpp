@@ -11,6 +11,7 @@
 #include <space/components/laser.hpp>
 #include <space/components/render.hpp>
 #include <space/components/targeter.hpp>
+#include <space/components/timer.hpp>
 #include <space/components/velocity.hpp>
 #include "../inputs.hpp"
 #include "game.hpp"
@@ -331,6 +332,17 @@ void fader(entt::registry &registry, const float dt) {
     });
 }
 
+void timer(entt::registry &registry, const float dt) {
+    auto view = registry.view<Timer>();
+
+    view.each([&registry, dt](const entt::entity entity, auto &timer) {
+        timer.remaining -= dt;
+        if (timer.remaining <= 0.0f) {
+            registry.destroy(entity);
+        }
+    });
+}
+
 void Game::update(const float dt) {
     if (!m_map_view) {
         commands(m_registry, m_us);
@@ -342,6 +354,7 @@ void Game::update(const float dt) {
         beam(m_registry, dt);
         health(m_registry);
         fader(m_registry, dt);
+        timer(m_registry, dt);
 
         const auto pos = m_registry.get<Body>(m_us);
         m_camera.position = {pos.x, pos.y};
