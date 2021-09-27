@@ -9,6 +9,7 @@ struct Render {
         None = 0,
         Ship,
         Asteroid,
+        Particle,
     };
 
     Type type = Type::None;

@@ -101,6 +101,18 @@ void Game::render() const noexcept {
                         RenderAPI::draw(quad, 0);
                         break;
                     }
+                    case Render::Type::Particle: {
+                        auto quad = Quad();
+                        quad.vertices[0] = glm::vec2{-body.hw, -body.hh};
+                        quad.vertices[1] = glm::vec2{-body.hw, body.hh};
+                        quad.vertices[2] = glm::vec2{body.hw, body.hh};
+                        quad.vertices[3] = glm::vec2{body.hw, -body.hh};
+                        quad.colour = {render.r, render.g, render.b, render.a};
+                        quad.rotation = body.r;
+                        quad.translation = {body.x, body.y};
+                        RenderAPI::draw(quad, 0);
+                        break;
+                    }
                     default:
                         break;
                 }
@@ -184,8 +196,9 @@ void Game::render() const noexcept {
                 auto line = Line();
                 line.vertices[0] = {0.0f, 0.0f};
                 line.vertices[1] = {to.x - from.x, to.y - from.y};
-                line.colour = {1.0f, 0.0f, 0.0f};
+                line.colour = {1.0f, 0.0f, 1.0f};
                 line.translation = {from.x, from.y};
+                line.thickness = 0.05f;
                 RenderAPI::draw(line, 1.0f);
             });
         }

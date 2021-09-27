@@ -215,7 +215,7 @@ void beam(entt::registry &registry, const float dt) {
         const auto to = registry.get<Body>(beam.target);
         const auto dx = to.x - from.x;
         const auto dy = to.y - from.y;
-        const auto dist = sqrt(dx * dx + dy * dy);
+        const float dist = sqrt(dx * dx + dy * dy);
         if (dist > beam.max_dist) {
             registry.destroy(entity);
             return;
@@ -232,6 +232,26 @@ void beam(entt::registry &registry, const float dt) {
             }
             default:
                 break;
+        }
+
+        // Glitter
+        for (int i = 0; i < 3; ++i) {
+            const float d = rand_between(0.0f, dist);
+            const float x = from.x + dx / dist * d + rand_between(-0.1f, 0.1f);
+            const float y = from.y + dy / dist * d + rand_between(-0.1f, 0.1f);
+            const auto size = rand_between(0.01f, 0.03f);
+            const float duration = rand_between(0.1f, 0.3f);
+
+            const auto nentity = registry.create();
+            registry.emplace<Body>(nentity, x, y, rand_between(0.0f, 360.0f), size, size);
+            registry.emplace<Render>(nentity,
+                                     Render::Type::Particle,
+                                     rand_between(0.6f, 1.0f),
+                                     rand_between(0.0f, 0.2f),
+                                     rand_between(0.6f, 0.7f),
+                                     1.0f);
+            registry.emplace<Timer>(nentity, duration);
+            registry.emplace<Fade>(nentity, duration);
         }
     });
 }
