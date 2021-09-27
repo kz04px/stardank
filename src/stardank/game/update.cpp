@@ -12,6 +12,7 @@
 #include <space/components/render.hpp>
 #include <space/components/targeter.hpp>
 #include <space/components/timer.hpp>
+#include <space/components/trail.hpp>
 #include <space/components/velocity.hpp>
 #include "../inputs.hpp"
 #include "game.hpp"
@@ -363,6 +364,25 @@ void timer(entt::registry &registry, const float dt) {
     });
 }
 
+void trailer(entt::registry &registry, const float dt) {
+    auto view = registry.view<const Body, Trail>();
+
+    view.each([&registry, dt](const auto &body, auto &trail) {
+        trail.cooldown -= dt;
+
+        if (trail.cooldown <= 0.0f) {
+            const auto nentity = registry.create();
+            registry.emplace<Body>(
+                nentity, body.x + rand_between(-0.1f, 0.1f), body.y + rand_between(-0.1f, 0.1f), 0.0f, 0.05f, 0.05f);
+            registry.emplace<Render>(nentity, Render::Type::Particle, trail.r, trail.g, trail.b, trail.a);
+            registry.emplace<Timer>(nentity, 1.0f);
+            registry.emplace<Fade>(nentity, 1.0f);
+
+            trail.cooldown = trail.frequency;
+        }
+    });
+}
+
 void Game::update(const float dt) {
     if (!m_map_view) {
         commands(m_registry, m_us);
@@ -375,6 +395,7 @@ void Game::update(const float dt) {
         health(m_registry);
         fader(m_registry, dt);
         timer(m_registry, dt);
+        trailer(m_registry, dt);
 
         const auto pos = m_registry.get<Body>(m_us);
         m_camera.position = {pos.x, pos.y};
