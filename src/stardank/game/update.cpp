@@ -34,7 +34,7 @@ void commands(entt::registry &registry, const entt::entity us) {
     commands.right = Inputs::is_pressed(68);
     commands.shoot = Inputs::is_pressed(70);
 
-    // Let's not have one input override the other
+    // Let's not have one command override the other
     if (commands.forwards && commands.backwards) {
         commands.forwards = false;
         commands.backwards = false;
