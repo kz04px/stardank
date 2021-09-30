@@ -7,6 +7,7 @@
 struct Quad {
     glm::vec2 vertices[4] = {};
     glm::vec2 translation = {};
+    glm::vec2 uv[4] = {};
     Colour colour = {};
     float rotation = 0.0f;
 };

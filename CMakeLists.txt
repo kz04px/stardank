@@ -63,6 +63,11 @@ add_executable(
     src/stardank/renderer/quad/flush.cpp
     src/stardank/renderer/quad/renderer.cpp
 
+    # Texture Renderer
+    src/stardank/renderer/texture/draw_quad.cpp
+    src/stardank/renderer/texture/flush.cpp
+    src/stardank/renderer/texture/renderer.cpp
+
     # Window
     src/stardank/window/window.cpp
     src/stardank/window/callback_cursor_position.cpp

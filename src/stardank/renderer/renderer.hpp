@@ -41,6 +41,8 @@ void draw(const Quad &quad, const float layer = 0.0f);
 
 void draw_text(const std::string &text, const float x, const float y, const float height, const float layer = 0.0f);
 
+void draw_textured(const Quad &quad, const float layer = 0.0f);
+
 void clear();
 
 void clear_colour(const int r, const int g, const int b, const int a = 255);

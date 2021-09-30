@@ -8,6 +8,7 @@
 // Renderers
 #include "quad/renderer.hpp"
 #include "text/renderer.hpp"
+#include "texture/renderer.hpp"
 // Shapes
 #include "line.hpp"
 #include "point.hpp"
@@ -18,12 +19,14 @@ namespace RenderAPI {
 
 std::unique_ptr<QuadRenderer> quad_renderer;
 std::unique_ptr<TextRenderer> text_renderer;
+std::unique_ptr<TextureRenderer> texture_renderer;
 Statistics statistics = {};
 bool wireframe = false;
 
 void init() {
     quad_renderer = std::make_unique<QuadRenderer>();
     text_renderer = std::make_unique<TextRenderer>();
+    texture_renderer = std::make_unique<TextureRenderer>();
 
     clear_colour(0.0f, 0.0f, 0.0f, 1.0f);
 }
@@ -31,21 +34,25 @@ void init() {
 void destroy() {
     quad_renderer.reset();
     text_renderer.reset();
+    texture_renderer.reset();
 }
 
 void begin(const Camera &camera) {
     const auto view = camera.matrix();
     quad_renderer->m_view = view;
     text_renderer->m_view = view;
+    texture_renderer->m_view = view;
 }
 
 void begin(const glm::mat4 &mat) {
     quad_renderer->m_view = mat;
     text_renderer->m_view = mat;
+    texture_renderer->m_view = mat;
 }
 
 void end() {
     quad_renderer->flush();
+    texture_renderer->flush();
 }
 
 void clear() {
@@ -79,6 +86,10 @@ void draw(const Line &line, const float layer) {
 
 void draw_text(const std::string &text, const float x, const float y, const float height, const float layer) {
     text_renderer->draw(text, x, y, height, layer);
+}
+
+void draw_textured(const Quad &quad, const float layer) {
+    texture_renderer->draw(quad, layer);
 }
 
 void enable_wireframe() {

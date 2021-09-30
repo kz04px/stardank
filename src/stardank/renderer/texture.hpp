@@ -3,16 +3,16 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-//#include <string>
+#include <string>
 
 struct Texture {
     Texture();
 
     ~Texture();
 
-    // static Texture from_file(const std::string &path);
+    static Texture from_file(const std::string &path);
 
-    // void load_file(const std::string &path);
+    void load_file(const std::string &path);
 
     void bind() const noexcept;
 
