@@ -203,6 +203,47 @@ void Game::render() const noexcept {
             });
         }
 
+        // Render the star field
+        m_star_field_texture.bind();
+        for (int layer = 1; layer < 4; ++layer) {
+            const auto scale = 10.0f * layer;
+            const float width = m_camera.right() - m_camera.left();
+            const float height = m_camera.top() - m_camera.bottom();
+            const int grid_w = width / scale + 2;
+            const int grid_h = height / scale + 2;
+            const float offset_x = m_camera.left() - fmod(m_camera.left(), scale);
+            const float offset_y = m_camera.bottom() - fmod(m_camera.bottom(), scale);
+
+            // Too small to see
+            {
+                const float window_w = m_window_width * scale / width;
+                const float window_h = m_window_height * scale / height;
+                if (window_w < 100.0f || window_h < 100.0f) {
+                    continue;
+                }
+            }
+
+            auto quad = Quad();
+            quad.vertices[0] = glm::vec2{0.0f, 0.0f};
+            quad.vertices[1] = glm::vec2{0.0f, scale};
+            quad.vertices[2] = glm::vec2{scale, scale};
+            quad.vertices[3] = glm::vec2{scale, 0.0f};
+            quad.uv[0] = {0.0f, 0.0f};
+            quad.uv[1] = {0.0f, 1.0f};
+            quad.uv[2] = {1.0f, 1.0f};
+            quad.uv[3] = {1.0f, 0.0f};
+            quad.rotation = 0.0f;
+
+            for (int h = -1; h < grid_h; ++h) {
+                for (int w = -1; w < grid_w; ++w) {
+                    const float x = offset_x + w * scale;
+                    const float y = offset_y + h * scale;
+                    quad.translation = {x, y};
+                    RenderAPI::draw_textured(quad, -20.0f + layer);
+                }
+            }
+        }
+
         RenderAPI::end();
     }
 }

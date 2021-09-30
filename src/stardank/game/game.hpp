@@ -4,6 +4,7 @@
 #include <entt/entt.hpp>
 #include <space/region.hpp>
 #include "../camera.hpp"
+#include "../renderer/texture.hpp"
 
 struct Event;
 struct KeyPressEvent;
@@ -54,6 +55,7 @@ class Game {
     space::Region m_region;
 
    private:
+    Texture m_star_field_texture;
     Camera m_camera;
     entt::registry m_registry;
     entt::entity m_us;

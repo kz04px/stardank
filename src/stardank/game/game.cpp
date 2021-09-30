@@ -15,7 +15,8 @@
 using namespace space::components;
 
 Game::Game()
-    : m_camera{},
+    : m_star_field_texture{},
+      m_camera{},
       m_region{},
       m_registry{},
       m_us{entt::null},
@@ -24,6 +25,14 @@ Game::Game()
       m_window_height{},
       m_map_view{true} {
     m_region.age = 0.0f;
+
+    // Load textures
+    try {
+        m_star_field_texture.load_file("../assets/textures/stars_0001.png");
+    } catch (char const *msg) {
+        std::cerr << msg << "\n";
+        std::exit(1);
+    }
 
     {
         std::vector<std::pair<int, int>> grids_available;
